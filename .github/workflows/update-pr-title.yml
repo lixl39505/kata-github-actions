@@ -14,6 +14,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Print current branch
+        run: |
+          git rev-parse --abbrev-ref HEAD
       - name: Read version and update PR title
         run: |
           # Read version from version file
