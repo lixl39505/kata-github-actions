@@ -13,6 +13,8 @@ jobs:
   update-title:
     if: github.event.pull_request.base.ref == 'master' && github.event.pull_request.head.ref == 'dev'
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
