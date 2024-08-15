@@ -1,0 +1,30 @@
+# .github/workflows/update-pr-title.yml 文件，在 PR 从 dev 分支合并到 master 分支时自动更新 PR 标题。
+
+name: Update PR Title
+on:
+  pull_request:
+    types: [opened]
+    branches:
+      - master
+jobs:
+  update-title:
+    if: github.event.pull_request.base.ref == 'master' && github.event.pull_request.head.ref == 'dev'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Read version and update PR title
+        run: |
+          # Read version from version file
+          version=$(cat version)
+
+          # Get current date in YYYYMMDD format
+          current_date=$(date +%Y%m%d)
+
+          # Construct new title
+          new_title="${version}-beta-${current_date}"
+
+          # Update PR title using GitHub CLI
+          gh pr edit ${GITHUB_EVENT_PULL_REQUEST_NUMBER} --title "${new_title}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
