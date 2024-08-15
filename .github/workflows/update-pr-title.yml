@@ -1,0 +1,31 @@
+# 创建从 dev 合并到 master 分支的 PR 时自动更新 PR 标题为 ${version}-beta-${current_date}
+name: Update PR Title
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+    branches:
+      - master
+jobs:
+  update-title:
+    if: github.event.pull_request.base.ref == 'master' && github.event.pull_request.head.ref == 'dev'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Read version and update PR title
+        run: |
+          # Read version from version file
+          version=$(cat version)
+
+          # Get current date in YYYYMMDD format
+          current_date=$(date +%Y%m%d)
+
+          # Construct new title
+          new_title="${version}-beta-${current_date}"
+
+          # Update PR title using GitHub CLI
+          gh pr edit ${GITHUB_EVENT_PULL_REQUEST_NUMBER} --title "${new_title}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
